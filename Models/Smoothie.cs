@@ -6,6 +6,7 @@ namespace smoothie_shack.Models
 {
   public class Smoothie : IPurchasable
   {
+    public int Id {get; set;}
     [Required]
     [Range(1, 100)]
     public decimal Price { get; set; }
@@ -15,15 +16,15 @@ namespace smoothie_shack.Models
     [MaxLength(100)]
     public string Name { get; set; }
     public string Description {get; set;}
-    List<string> Ingredients {get; set;} 
+   // public List<string> Ingredients {get; set;} 
 
 
-    public Smoothie(decimal price, string name, string description, List<string> ingredients)
-    {
-        Price = price;
-        Name = name;
-        Description = description;
-        Ingredients = ingredients;
-    }
+    // public Smoothie(decimal price, string name, string description)
+    // {
+    //     Price = price;
+    //     Name = name;
+    //     Description = description;
+        
+    // }
   }
 }

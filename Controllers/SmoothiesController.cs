@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using smoothie_shack.Models;
+using smoothie_shack.Repositories;
 
 namespace smoothie_shack.Controllers
 {
@@ -11,34 +12,33 @@ namespace smoothie_shack.Controllers
   [ApiController]
   public class SmoothiesController : ControllerBase
   {
-    List<Smoothie> Smoothies = Program.Smoothies;
+    private readonly SmoothieRepository db;
+    public SmoothiesController(SmoothieRepository repo)
+    {
+      db = repo;
+    }
 
     // GET api/smoothies
     [HttpGet]
-    public ActionResult<IEnumerable<Smoothie>> Get()
+    public IEnumerable<Smoothie> Get()
     {
-      return Smoothies;
+      return db.GetAll();
     }
 
     // GET api/smoothies/5
     [HttpGet("{id}")]
-    public ActionResult<Smoothie> Get(int id)
+    public Smoothie Get(int id)
     {
-      if (id > -1 && id < Smoothies.Count)
-      {
-        return Smoothies[id];
-      }
-      return null;
+      return db.GetById(id);
     }
 
     // POST api/smoothies
     [HttpPost]
-    public ActionResult<List<Smoothie>> Post([FromBody]Smoothie newSmoothie)
+    public Smoothie Post([FromBody]Smoothie newSmoothie)
     {
       if (ModelState.IsValid)
       {
-        Smoothies.Add(newSmoothie);
-        return Smoothies;
+        return db.AddSmoothie(newSmoothie);
       }
       return null;
     }
