@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using smoothie_shack.Models;
 using smoothie_shack.Repositories;
@@ -10,7 +11,7 @@ namespace smoothie_shack.Controllers
 {
   [Route("api/[controller]")]
   [ApiController]
-  public class SmoothiesController : ControllerBase
+  public class SmoothiesController : Controller
   {
     private readonly SmoothieRepository db;
     public SmoothiesController(SmoothieRepository repo)

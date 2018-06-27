@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -30,10 +31,39 @@ namespace smoothie_shack
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            ConfigureAuth(services);
             services.AddMvc();
             services.AddTransient<IDbConnection>(x => CreateDBContext());
             services.AddTransient<SmoothieRepository>();
+            services.AddTransient<UserRepository>();
         }
+        
+        private static void ConfigureAuth(IServiceCollection services)
+        {
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.LoginPath = "/Account/Login";
+                    options.Events.OnRedirectToLogin = (context) =>
+                    {
+                        context.Response.StatusCode = 401;
+                        return Task.CompletedTask; //how you finish asyncronous task
+                    };
+                });
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("ANYORIGIN", builder =>
+                {
+                    builder
+                    .AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+                });
+            });
+        }
+
         private IDbConnection CreateDBContext()
         {
             var connection = new MySqlConnection(_connectionString);
@@ -52,7 +82,13 @@ namespace smoothie_shack
                 app.UseHsts();
             }
 
-            
+            //place in order of use
+            app.UseCors("ANYORIGIN");
+            app.UseAuthentication(); //DON'T FORGET!!
+
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+
             app.UseMvc();
         }
     }
